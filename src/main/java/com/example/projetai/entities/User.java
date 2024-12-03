@@ -1,8 +1,11 @@
 package com.example.projetai.entities;
 
 import com.example.projetai.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -14,9 +17,11 @@ public class User {
     private String name;
     private String password;
     private UserRole role;
-
     @Lob
     @Column(columnDefinition = "longblob")
     private byte[] img ;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Query> queries;
 
 }
