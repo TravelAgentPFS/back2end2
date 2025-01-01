@@ -1,6 +1,6 @@
 package com.example.projetai.controller;
 
-import com.example.projetai.dto.QueryRequest;
+// import com.example.projetai.dto.QueryRequest;
 import com.example.projetai.entities.Query;
 import com.example.projetai.service.QueryService;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +35,7 @@ public class QueryController {
 
     @GetMapping("/my-queries")
     public ResponseEntity<List<Query>> getUserQueries(@RequestParam Long userId) {
+        System.out.println(userId);
         List<Query> queries = queryService.getQueriesByUserId(userId);
         return ResponseEntity.ok(queries);
     }

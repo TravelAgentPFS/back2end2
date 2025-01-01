@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
+import java.util.Base64;
+// import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -61,7 +62,9 @@ public class AuthController {
             AuthenticationResponse authResponse = new AuthenticationResponse(
                     user.getId(),
                     user.getEmail(),
+                    user.getName(),
                     user.getRole(),
+                    Base64.getEncoder().encodeToString(user.getImg()),
                     jwt
             );
             return ResponseEntity.ok(authResponse);
@@ -77,6 +80,15 @@ public class AuthController {
        }
 
         UserDto userDto =  authService.createUser(signupRequest);
-         return new ResponseEntity<>(userDto, HttpStatus.OK);
+        final String jwt = jwtUtil.generateToken(userDto.getName());
+        AuthenticationResponse authResponse = new AuthenticationResponse(
+                    userDto.getId(),
+                    userDto.getEmail(),
+                    userDto.getName(),
+                    userDto.getRole(),
+                    userDto.getImg(),
+                    jwt
+            );
+        return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 }

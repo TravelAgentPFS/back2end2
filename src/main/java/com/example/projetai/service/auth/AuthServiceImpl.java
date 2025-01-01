@@ -10,6 +10,9 @@ import com.example.projetai.enums.UserRole;
 
 import com.example.projetai.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
+
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,8 +23,8 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    // @Autowired
+    // private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
 
@@ -31,6 +34,11 @@ public class AuthServiceImpl implements AuthService {
         user.setName(signupRequest.getName());
         user.setPassword(new BCryptPasswordEncoder().encode(signupRequest.getPassword()));
         user.setRole(UserRole.USER);
+        // Decode Base64 string to byte[]
+        if (signupRequest.getImg() != null && !signupRequest.getImg().isEmpty()) {
+            byte[] decodedImg = Base64.getDecoder().decode(signupRequest.getImg());
+            user.setImg(decodedImg);
+        }
         User createdUser = userRepository.save(user);
 
 
@@ -38,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
         userDto.setId(createdUser.getId());
         userDto.setEmail(signupRequest.getEmail());
         userDto.setName(signupRequest.getName());
+        userDto.setImg(signupRequest.getImg());
         userDto.setRole(UserRole.USER);
 
         return userDto;
