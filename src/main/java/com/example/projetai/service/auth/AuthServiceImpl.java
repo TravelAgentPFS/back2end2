@@ -39,16 +39,13 @@ public class AuthServiceImpl implements AuthService {
         user.setName(signupRequest.getName());
         user.setPassword(new BCryptPasswordEncoder().encode(signupRequest.getPassword()));
         user.setRole(UserRole.USER);
-<<<<<<< HEAD
-=======
+
         // Decode Base64 string to byte[]
         if (signupRequest.getImg() != null && !signupRequest.getImg().isEmpty()) {
             byte[] decodedImg = Base64.getDecoder().decode(signupRequest.getImg());
             user.setImg(decodedImg);
         }
-        User createdUser = userRepository.save(user);
->>>>>>> fae35d52357a437167af54e80b8e5a4b7968a041
-
+        User createdUser=null;
         try {
             Stripe.apiKey = "sk_test_51QcGKUFTXQXhxwtldMmtJCTBYMjIPA6X6BJG4GltlYunzhBXvILfXJj6eoWWUola18VIiots9v4ZtUaURc9DlFxz00kO6OiPgV";
             Customer customer = Customer.create(
@@ -59,8 +56,7 @@ public class AuthServiceImpl implements AuthService {
             );
             user.setCustomerStripeId(customer.getId());
 
-<<<<<<< HEAD
-            User createdUser = userRepository.save(user);
+            createdUser = userRepository.save(user);
 
             UserDto userDto = new UserDto();
             userDto.setId(createdUser.getId());
@@ -68,19 +64,12 @@ public class AuthServiceImpl implements AuthService {
             userDto.setName(signupRequest.getName());
             userDto.setRole(UserRole.USER);
             userDto.setCustomerStripeId(createdUser.getCustomerStripeId());
+            userDto.setImg(signupRequest.getImg());
             return userDto;
 
         } catch (StripeException e) {
             throw new RuntimeException("Erreur lors de la création du client Stripe : " + e.getMessage());
         }
-=======
-        UserDto userDto = new UserDto();
-        userDto.setId(createdUser.getId());
-        userDto.setEmail(signupRequest.getEmail());
-        userDto.setName(signupRequest.getName());
-        userDto.setImg(signupRequest.getImg());
-        userDto.setRole(UserRole.USER);
->>>>>>> fae35d52357a437167af54e80b8e5a4b7968a041
 
     }
 

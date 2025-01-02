@@ -64,13 +64,10 @@ public class AuthController {
                     user.getEmail(),
                     user.getName(),
                     user.getRole(),
-<<<<<<< HEAD
+                    Base64.getEncoder().encodeToString(user.getImg()),
                     jwt,
                     user.getCustomerStripeId()
-=======
-                    Base64.getEncoder().encodeToString(user.getImg()),
-                    jwt
->>>>>>> fae35d52357a437167af54e80b8e5a4b7968a041
+
             );
             return ResponseEntity.ok(authResponse);
         }
@@ -92,7 +89,8 @@ public class AuthController {
                     userDto.getName(),
                     userDto.getRole(),
                     userDto.getImg(),
-                    jwt
+                    jwt,
+                    userDto.getCustomerStripeId()
             );
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
