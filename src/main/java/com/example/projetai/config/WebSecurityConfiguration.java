@@ -27,7 +27,7 @@ public class WebSecurityConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/authenticate/**", "/sign-up/**", "/order/**").permitAll()
+                        .requestMatchers("/authenticate/**", "/sign-up/**", "/order/**","/api/reservations/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

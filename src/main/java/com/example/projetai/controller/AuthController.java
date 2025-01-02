@@ -62,7 +62,8 @@ public class AuthController {
                     user.getId(),
                     user.getEmail(),
                     user.getRole(),
-                    jwt
+                    jwt,
+                    user.getCustomerStripeId()
             );
             return ResponseEntity.ok(authResponse);
         }

@@ -9,10 +9,15 @@ import com.example.projetai.entities.User;
 import com.example.projetai.enums.UserRole;
 
 import com.example.projetai.repository.UserRepository;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -31,16 +36,31 @@ public class AuthServiceImpl implements AuthService {
         user.setName(signupRequest.getName());
         user.setPassword(new BCryptPasswordEncoder().encode(signupRequest.getPassword()));
         user.setRole(UserRole.USER);
-        User createdUser = userRepository.save(user);
 
+        try {
+            Stripe.apiKey = "sk_test_51QcGKUFTXQXhxwtldMmtJCTBYMjIPA6X6BJG4GltlYunzhBXvILfXJj6eoWWUola18VIiots9v4ZtUaURc9DlFxz00kO6OiPgV";
+            Customer customer = Customer.create(
+                    Map.of(
+                            "email", signupRequest.getEmail(),
+                            "name", signupRequest.getName()
+                    )
+            );
+            user.setCustomerStripeId(customer.getId());
 
-        UserDto userDto = new UserDto();
-        userDto.setId(createdUser.getId());
-        userDto.setEmail(signupRequest.getEmail());
-        userDto.setName(signupRequest.getName());
-        userDto.setRole(UserRole.USER);
+            User createdUser = userRepository.save(user);
 
-        return userDto;
+            UserDto userDto = new UserDto();
+            userDto.setId(createdUser.getId());
+            userDto.setEmail(signupRequest.getEmail());
+            userDto.setName(signupRequest.getName());
+            userDto.setRole(UserRole.USER);
+            userDto.setCustomerStripeId(createdUser.getCustomerStripeId());
+            return userDto;
+
+        } catch (StripeException e) {
+            throw new RuntimeException("Erreur lors de la création du client Stripe : " + e.getMessage());
+        }
+
     }
 
     public Boolean hasUserWithEmail(String email){

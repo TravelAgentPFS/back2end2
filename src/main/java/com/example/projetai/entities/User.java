@@ -17,6 +17,7 @@ public class User {
     private String name;
     private String password;
     private UserRole role;
+    private String customerStripeId;
     @Lob
     @Column(columnDefinition = "longblob")
     private byte[] img ;
