@@ -1,6 +1,6 @@
 package com.example.projetai.dto;
 
-import lombok.Data;
+// import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
