@@ -6,13 +6,9 @@ import com.example.projetai.entities.User;
 import com.example.projetai.enums.ReservationStatus;
 import com.example.projetai.repository.HotelReservationRepository;
 import com.example.projetai.repository.UserRepository;
-import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethod;
-import com.stripe.param.PaymentIntentConfirmParams;
 import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentMethodCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -40,12 +36,13 @@ public class HotelReservationService {
         reservation.setCheckOutDate(request.getCheckOutDate());
         reservation.setTotalPrice(request.getTotalPrice());
         reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setCurrency(request.getCurrency());
         reservation = reservationRepository.save(reservation);
 
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                 .setAmount((long) (request.getTotalPrice() * 100))
-                .setCurrency("usd")
-                .setCustomer("cus_RVchCvmWezzA59")
+                .setCurrency(request.getCurrency().toLowerCase())
+                .setCustomer(user.getCustomerStripeId())
                 .putMetadata("reservationId", reservation.getId().toString())
                 .build();
         PaymentIntent paymentIntent = PaymentIntent.create(params);

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 @Setter
 @Getter
 public class ReservationRequest {
@@ -13,5 +12,6 @@ public class ReservationRequest {
     private String hotelName;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
+    private String currency;
     private double totalPrice;
 }

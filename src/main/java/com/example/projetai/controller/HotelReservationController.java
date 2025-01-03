@@ -23,6 +23,13 @@ public class HotelReservationController {
 
     @PostMapping
     public HotelReservation createReservation(@RequestBody ReservationRequest request) throws StripeException {
+        System.out.println(request.getUserId());
+        System.out.println(request.getHotelId());
+        System.out.println(request.getHotelName());
+        System.out.println(request.getCheckInDate());
+        System.out.println(request.getCheckOutDate());
+        System.out.println(request.getTotalPrice());
+        // return null;
         return reservationService.createReservation(request);
     }
 
@@ -45,7 +52,6 @@ public class HotelReservationController {
             PaymentIntent paymentIntent = (PaymentIntent) event.getDataObjectDeserializer().getObject().orElse(null);
 
             if (paymentIntent != null) {
-                String paymentIntentId = paymentIntent.getId();
 
                 String reservationId = paymentIntent.getMetadata().get("reservationId");
                 if (reservationId != null) {
