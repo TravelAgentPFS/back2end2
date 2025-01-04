@@ -1,7 +1,8 @@
 package com.example.projetai.controller;
 
-import com.example.projetai.dto.ReservationRequest;
+import com.example.projetai.dto.HotelReservationRequest;
 import com.example.projetai.entities.HotelReservation;
+import com.example.projetai.service.FlightReservationService;
 import com.example.projetai.service.HotelReservationService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -13,23 +14,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reservations")
+@RequestMapping("api/reservations")
 @CrossOrigin("*")
 public class HotelReservationController {
 
     private static final String endpointSecret = "whsec_U4mPq7khjBEMMBjLRalO4WZF4UWXAjkd";
     @Autowired
     private HotelReservationService reservationService;
+    @Autowired
+    private FlightReservationService flightReservationService;
 
     @PostMapping
-    public HotelReservation createReservation(@RequestBody ReservationRequest request) throws StripeException {
-        System.out.println(request.getUserId());
-        System.out.println(request.getHotelId());
-        System.out.println(request.getHotelName());
-        System.out.println(request.getCheckInDate());
-        System.out.println(request.getCheckOutDate());
-        System.out.println(request.getTotalPrice());
-        // return null;
+    public HotelReservation createReservation(@RequestBody HotelReservationRequest request) throws StripeException {
+
         return reservationService.createReservation(request);
     }
 
@@ -53,10 +50,15 @@ public class HotelReservationController {
 
             if (paymentIntent != null) {
 
-                String reservationId = paymentIntent.getMetadata().get("reservationId");
-                if (reservationId != null) {
-                    Long reservationIdLong = Long.parseLong(reservationId);
+                String hotelReservationId = paymentIntent.getMetadata().get("hotelReservationId");
+                if (hotelReservationId != null) {
+                    Long reservationIdLong = Long.parseLong(hotelReservationId);
                     reservationService.confirmPayment(reservationIdLong);
+                }
+                String flightReservationId = paymentIntent.getMetadata().get("flightReservationId");
+                if (flightReservationId != null) {
+                    Long reservationIdLong = Long.parseLong(flightReservationId);
+                    flightReservationService.confirmPayment(reservationIdLong);
                 }
             }
         }

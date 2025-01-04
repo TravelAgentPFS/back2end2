@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 @Setter
 @Getter
-public class ReservationRequest {
+public class HotelReservationRequest {
     private Long userId;
     private String hotelId;
     private String hotelName;
