@@ -32,7 +32,7 @@ pipeline {
         stage('Build image') {
             steps {
                 script {
-                    sh 'docker-compose build'
+                    sh 'docker build -t amjadyrd/travel-agent-pfs .'
                 }
             }
         }
