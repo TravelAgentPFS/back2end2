@@ -26,13 +26,16 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn clean compile'
+                sh 'mvn clean compile package -DskipTests'
             }
         }
         stage('Build image') {
             steps {
-                script {
-                    sh 'docker build -t amjadyrd/travel-agent-pfs .'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-pat', passwordVariable: 'password', usernameVariable: 'username')]) {
+                    script {
+                        sh 'docker login -u ${username} -p ${password}'
+                        sh 'docker build -t amjadyrd/travel-agent-pfs .'
+                    }
                 }
             }
         }
@@ -43,10 +46,6 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
-            steps {
-                echo 'Déploiement simulé réussi'
-            }
-        }
+        
     }
 }
