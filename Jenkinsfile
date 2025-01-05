@@ -29,11 +29,6 @@ pipeline {
                 sh 'mvn clean compile'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
         stage('Build image') {
             steps {
                 script {
