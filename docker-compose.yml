@@ -1,8 +1,11 @@
+version: "3.8"
 services:
   travel-mysql-db:
     image: mariadb:10.6
     container_name: travel-mysql-db
     restart: always
+    networks:
+      - public  # Updated to use existing 'public' network
     volumes:
       - mysql_travel-data:/var/lib/mysql
     environment:
@@ -13,22 +16,42 @@ services:
     ports:
       - 3306:3306
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints:
+          - node.role == manager
+
   phpmyadmin:
     image: phpmyadmin
     restart: always
+    networks:
+      - public  # Updated to use existing 'public' network
     ports:
       - 9999:80
     environment:
       PMA_HOST: travel-mysql-db
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
+    depends_on:
+      - travel-mysql-db
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+
   Travel_ai_devops:
     build: .
     container_name: travel_devops_ai
     image: travel_devops_ai
+    networks:
+      - public  # Updated to use existing 'public' network
     ports:
       - '8099:8099'
     expose:
@@ -37,6 +60,23 @@ services:
     depends_on:
       - travel-mysql-db
     environment:
-      - DB_URL=jdbc:mysql://travel-mysql-db:3306/db-travel
+      - DB_URL=jdbc:mysql://travel-mysql-db:3306/db-travel?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=travelDb
+      - SPRING_DATASOURCE_PASSWORD=travelApp1234
+      - STRIPE_API_KEY=sk_test_51QcGKUFTXQXhxwtldMmtJCTBYMjIPA6X6BJG4GltlYunzhBXvILfXJj6eoWWUola18VIiots9v4ZtUaURc9DlFxz00kO6OiPgV
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints:
+          - node.role == worker
+
 volumes:
   mysql_travel-data:
+    driver: local
+
+networks:
+  public:  # Use the existing 'public' network
+    external: true
+
