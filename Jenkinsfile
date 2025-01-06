@@ -46,13 +46,13 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to EC2') {
+        stage('Deploy') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'EC2_SSH_KEY')]) {
+                sshagent(['ec2-ssh-key'])
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-pat', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         script {
                             sh '''
-                            ssh -i ${EC2_SSH_KEY} -o StrictHostKeyChecking=no ec2-user@ec2-35-181-136-158.eu-west-3.compute.amazonaws.com  << EOF
+                            ssh -o StrictHostKeyChecking=no ec2-user@ec2-35-181-136-158.eu-west-3.compute.amazonaws.com  << EOF
                                 docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
                                 docker pull amjadyrd/travel-agent-pfs
                                 cd /home/ec2-user/test/back2end2
@@ -65,4 +65,3 @@ pipeline {
             }
         }
     }
-}
