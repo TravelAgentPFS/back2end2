@@ -58,8 +58,20 @@ public class AuthController {
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+            AuthenticationResponse authResponse;
+            if(user.getImg()==null){
+                authResponse = new AuthenticationResponse(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getName(),
+                    user.getRole(),
+                    null,
+                    jwt,
+                    user.getCustomerStripeId()
 
-            AuthenticationResponse authResponse = new AuthenticationResponse(
+            );
+            }else{
+                authResponse = new AuthenticationResponse(
                     user.getId(),
                     user.getEmail(),
                     user.getName(),
@@ -69,6 +81,8 @@ public class AuthController {
                     user.getCustomerStripeId()
 
             );
+            }
+            
             return ResponseEntity.ok(authResponse);
         }
 
